@@ -116,11 +116,15 @@ public void displayMember() {
 
 }
 
+
+
 class Library {
 
     private ArrayList<Book> books_collection;
     private ArrayList<Member> members;
+    private ArrayList<IssueRecord> records;
 
+    //  BOOK MEATHODS ----------------------------------
     public void addBook(Book book){
         books_collection.add(book);
         System.out.println("Book added successfully! 👍");
@@ -142,12 +146,232 @@ class Library {
 
     for (Book book : books_collection) {
 
-        if (book.getBookId() == bookId) {
-            return ;
+            if (book.getBookId() == bookId) {
+                return ;
+            }
+        }
+
+        return null;
+    }
+        //if we find the book then return the book object otherwise nope ;
+
+
+    //  MEMBER meathods  ----------------------------------
+    public void addMember(Member member) {
+
+    members.add(member);
+
+    System.out.println("Member registered successfully.");
+}
+
+public void displayMembers() {
+
+    if (members.isEmpty()) {
+        System.out.println("No members registered.");
+        return;
+    }
+
+    for (Member member : members) {
+        member.displayMember();
+    }
+}
+    public void issueBook(int bookId, int memberId) {
+
+    Book book = findBook(bookId);
+
+    if (book == null) {
+        System.out.println("Book not found.");
+        return;
+    }
+
+    if (!book.isAvailable()) {
+        System.out.println("Book is already issued.");
+        return;
+    }
+
+    Member member = findMember(memberId);
+
+    if (member == null) {
+        System.out.println("Member not found.");
+        return;
+    }
+
+    book.setAvailable(false);
+
+    System.out.println(
+        "Book issued to " + member.getName()
+    );
+}
+
+
+public void issueBook(int bookId, int memberId) {
+
+    Book book = findBook(bookId);
+
+    if (book == null) {
+        System.out.println("Book not found.");
+        return;
+    }
+
+    if (!book.isAvailable()) {
+        System.out.println("Book is already issued.");
+        return;
+    }
+
+    Member member = findMember(memberId);
+
+    if (member == null) {
+        System.out.println("Member not found.");
+        return;
+    }
+
+    book.setAvailable(false);
+
+    System.out.println(
+        "Book issued to " + member.getName()
+    );
+}
+
+public Member findMember(int memberId) {
+
+    for (Member member : members) {
+
+        if (member.getMemberId() == memberId) {
+            return member;
         }
     }
 
     return null;
 }
+        //  ISSUE BOOK ----------------------------------
+
+    public void issueBook(int bookId, int memberId) {
+
+        Book book = findBook(bookId);
+
+        if (book == null) {
+            System.out.println("Book not found.");
+            return;
+        }
+
+        Member member = findMember(memberId);
+
+        if (member == null) {
+            System.out.println("Member not found.");
+            return;
+        }
+
+        if (!book.isAvailable()) {
+            System.out.println("Book is already issued.");
+            return;
+        }
+
+        book.setAvailable(false);
+
+        IssueRecord record =
+            new IssueRecord(book, member);
+
+        records.add(record);
+
+        System.out.println(
+            "Book issued successfully to "
+            + member.getName()
+        );
+    }
+
+    public void returnBook(int bookId) {
+
+        Book book = findBook(bookId);
+
+        if (book == null) {
+            System.out.println("Book not found.");
+            return;
+        }
+
+        for (IssueRecord record : records) {
+
+            if (record.getBook().getBookId() == bookId && !record.isReturned() ) {
+
+                record.returnBook();
+
+                book.setAvailable(true);
+
+                System.out.println("Book returned successfully.");
+
+                return;
+            }
+        }
+
+        System.out.println("This book is not issued.");
+    }
+
+    public void displayIssuedBooks() {
+
+        boolean found = false;
+
+        for (IssueRecord record : records) {
+
+            if (!record.isReturned()) {
+
+                found = true;
+
+                System.out.println( "Book: " + record.getBook().getTitle()+ " | Borrowed by: "+ record.getMember().getName()+ " | Issue Date: "+ record.getIssueDate()  );
+            }
+        }
+
+        if (!found) {
+            System.out.println("No books are currently issued.");
+        }
+    }
+
 
 }
+
+
+
+class IssueRecord {
+
+    private Book book;
+    private Member member;
+    private LocalDate issueDate;
+    private LocalDate returnDate;
+
+
+    public IssueRecord(Book book, Member member) {
+
+        this.book = book;
+        this.member = member;
+        this.issueDate = LocalDate.now();
+        this.returnDate = null;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public LocalDate getIssueDate() {
+        return issueDate;
+    }
+
+    public LocalDate getReturnDate() {
+        return returnDate;
+    }
+
+    public void returnBook() {
+        returnDate = LocalDate.now();
+    }
+
+    public boolean isReturned() {
+        return returnDate != null;
+    }
+
+}
+
+
+
+
+
